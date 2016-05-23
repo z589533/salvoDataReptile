@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-3.0xsd
+http://www.springframework.org/schema/data/mongo
+http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxTotal" value="5000" />    <!--最大连接数 -->
+		<property name="maxIdle" value="10" />     <!--最大空闲数 -->
+		<property name="maxWaitMillis" value="5000" />    <!--最大等待时间ms -->
+		<property name="testWhileIdle" value="true" /><!-- idle状态监测用异步线程evict进行检查， -->
+		<property name="numTestsPerEvictionRun" value="100" />	<!-- 一次最多evict的pool里的jedis实例个数 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />	<!-- test idle 线程的时间间隔 -->
+		<property name="testOnBorrow" value="true" /><!-- 在borrow一个jedis实例时，是否提前进行alidate操作；如果为true，则得到的jedis实例均是可用的 -->
+		<property name="testOnReturn" value="true" /><!-- 在return给pool时，是否提前进行validate操作 -->
+	</bean>
+	<bean id="jedis.shardInfo" class="redis.clients.jedis.JedisShardInfo">
+		<constructor-arg name="host" value="${redis.host}" />
+		<constructor-arg name="port" value="${redis.port}" />
+		<property name="password" value="${redis.pwd}"></property>
+	</bean>
+	<bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">
+		<constructor-arg index="0" ref="jedisPoolConfig" />
+		<constructor-arg index="1">
+			<list>
+				<ref bean="jedis.shardInfo" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+</beans>

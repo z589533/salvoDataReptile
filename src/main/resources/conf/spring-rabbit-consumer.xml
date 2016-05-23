@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/integration/ip
+      http://www.springframework.org/schema/integration/ip/spring-integration-ip-2.0.xsd
+      http://www.springframework.org/schema/integration
+      http://www.springframework.org/schema/integration/spring-integration.xsd
+      http://www.springframework.org/schema/task
+      http://www.springframework.org/schema/task/spring-task-3.0.xsd
+      http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+      http://www.springframework.org/schema/rabbit
+      http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
+      ">
+
+	<!-- 配置线程池 -->
+	<bean id="taskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<!-- 线程池维护线程的最少数量 -->
+		<property name="corePoolSize" value="5" />
+		<!-- 线程池维护线程所允许的空闲时间 -->
+		<property name="keepAliveSeconds" value="30000" />
+		<!-- 线程池维护线程的最大数量 -->
+		<property name="maxPoolSize" value="1000" />
+		<!-- 线程池所使用的缓冲队列 -->
+		<property name="queueCapacity" value="2000" />
+	</bean>
+
+	<!-- <task:executor id="taskExecutor" pool-size="1-4" queue-capacity="2000" 
+		/> -->
+
+	<rabbit:connection-factory id="connectionFactory"
+		host="218.17.122.215" username="yunjisuan" password="yunjisuan" />
+
+	<!-- 连接服务配置 -->
+	
+
+
+	<!-- 第一个消费者 -->
+	<rabbit:admin connection-factory="connectionFactory" />
+
+	<!-- queue 队列声明 -->
+
+	<rabbit:queue id="queue_one" durable="true" auto-delete="false"
+
+		exclusive="false" name="queue_one" />
+
+	<!-- exchange queue binging key 绑定 -->
+
+	<rabbit:direct-exchange name="my-mq-exchange"
+		durable="true" auto-delete="false" id="my-mq-exchange">
+		<rabbit:bindings>
+			<rabbit:binding queue="queue_one" key="queue_one_key" />
+		</rabbit:bindings>
+	</rabbit:direct-exchange>
+
+	<bean id="queueOneLitener" class="com.iaas.pay.rabbit.QueueOneLitener">
+	</bean>
+	<!-- queue litener 观察 监听模式 当有消息到达时会通知监听在对应的队列上的监听对象 -->
+
+	<rabbit:listener-container
+		connection-factory="connectionFactory" acknowledge="auto"
+		task-executor="taskExecutor">
+		<rabbit:listener queues="queue_one" ref="queueOneLitener" />
+	</rabbit:listener-container>
+
+
+
+	<!-- 第二个消费者 -->
+	<rabbit:admin connection-factory="connectionFactory" />
+	<!-- queue 队列声明 -->
+	<rabbit:queue id="queue_one" durable="true" auto-delete="false"
+		exclusive="false" name="queue_one" />
+
+	<!-- exchange queue binging key 绑定 -->
+
+	<rabbit:direct-exchange name="my-mq-exchange-two"
+		durable="true" auto-delete="false" id="my-mq-exchange-two">
+		<rabbit:bindings>
+			<rabbit:binding queue="queue_one" key="queue_one_key" />
+		</rabbit:bindings>
+	</rabbit:direct-exchange>
+
+	<bean id="queueOneLitener-two" class="com.iaas.pay.rabbit.QueueOneLitener">
+	</bean>
+	<!-- queue litener 观察 监听模式 当有消息到达时会通知监听在对应的队列上的监听对象 -->
+
+	<rabbit:listener-container
+		connection-factory="connectionFactory" acknowledge="auto"
+		task-executor="taskExecutor">
+		<rabbit:listener queues="queue_one" ref="queueOneLitener-two" />
+	</rabbit:listener-container>
+</beans>

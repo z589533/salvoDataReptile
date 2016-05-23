@@ -22,21 +22,27 @@
 		<jackson.varsion>2.7.3</jackson.varsion>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>nykj nexus</id>
-			<name>com.nykj Nexus Repository</name>
-			<url>http://nexus.rd.91160.com/content/repositories/releases/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<dependencies>
+
+
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.9.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.htmlparser</groupId>
+			<artifactId>htmlparser</artifactId>
+			<version>2.1</version>
+		</dependency>
+
+		<!-- <dependency> <groupId>us.codecraft</groupId> <artifactId>webmagic-core</artifactId> 
+			<version>0.5.3</version> </dependency> <dependency> <groupId>us.codecraft</groupId> 
+			<artifactId>webmagic-extension</artifactId> <version>0.5.3</version> </dependency> -->
+
+
 		<dependency>
 			<!-- core utilitises uesed by other modules .defined use spring utility 
 				APIs(org.springframework) -->
@@ -74,14 +80,6 @@
 			<version>${spring.version}</version>
 		</dependency>
 
-		<!-- <dependency> <groupId>org.springframework</groupId> <artifactId>org.springframework</artifactId> 
-			<version>1.0.0</version> </dependency> -->
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-iaas-codec</artifactId>
-			<version>1.0.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>dom4j</groupId>
@@ -417,7 +415,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>IaasPay</finalName>
+		<finalName>salvoDataReptile</finalName>
 		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
 		<outputDirectory>${basedir}/src/main/webapp/WEB-INF/classes</outputDirectory>
 		<resources>
